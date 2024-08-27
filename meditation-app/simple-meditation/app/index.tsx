@@ -1,12 +1,21 @@
-import { View, Text, ImageBackground } from "react-native";
-import React from "react";
-import { LinearGradient } from "expo-linear-gradient";
+import React from 'react';
+import { View, Text, ImageBackground, SafeAreaView, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 
 import beachImage from "@/assets/meditation-images/beach.webp";
+import CustomButton from '@/components/CustomButton';
 
 const App = () => {
   return (
-    <View className="flex-1 justify-center items-center">
+    <View className="flex-1">
+      {/* StatusBar component from expo-status-bar to manage the status bar on both iOS and Android */}
+      <StatusBar
+        style="light"
+        translucent={true} // Makes the status bar translucent
+        backgroundColor={Platform.OS === 'android' ? "rgba(0,0,0,0.4)" : "transparent"}
+      />
+
       <ImageBackground
         source={beachImage}
         resizeMode="cover"
@@ -16,7 +25,22 @@ const App = () => {
           className="flex-1"
           colors={["rgba(0,0,0,0.4)", "rgba(0,0,0,0.8)"]}
         >
-          <Text>App</Text>
+          {/* SafeAreaView will help on iOS, and we'll add padding on Android */}
+          <SafeAreaView className="flex-1 mx-5 my-12 justify-between">
+            <View
+              className={Platform.OS === 'android' ? 'mt-11' : ''}
+            >
+              <Text className="text-center text-white font-bold text-4xl mt-7">Simple Meditation</Text>
+              <Text className="text-center text-white text-regular text-lg mt-4">Simplifying Meditation for Everyone</Text>
+            </View>
+
+            <View>
+              <CustomButton
+                onPress={() => console.log("tap")}
+                title="Get Started"
+              />
+            </View>
+          </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
     </View>
