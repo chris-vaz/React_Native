@@ -26,7 +26,7 @@ const App = () => {
           colors={["rgba(0,0,0,0.4)", "rgba(0,0,0,0.8)"]}
         >
           {/* SafeAreaView will help on iOS, and we'll add padding on Android */}
-          <SafeAreaView className="flex-1 mx-5 my-12 justify-between">
+          <SafeAreaView className="flex-1 mx-6 my-12 justify-between">
             <View
               className={Platform.OS === 'android' ? 'mt-11' : ''}
             >
