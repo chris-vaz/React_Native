@@ -30,7 +30,7 @@ const App = () => {
             <View
               className={Platform.OS === 'android' ? 'mt-11' : ''}
             >
-              <Text className="text-center text-white font-bold text-4xl mt-7">Simple Meditation</Text>
+              <Text className="text-center text-white font-bold text-4xl mt-4">Simple Meditation</Text>
               <Text className="text-center text-white text-regular text-lg mt-4">Simplifying Meditation for Everyone</Text>
             </View>
 
