@@ -19,6 +19,7 @@ const App = () => {
         style="light"
         translucent={true} // Makes the status bar translucent
         backgroundColor={Platform.OS === 'android' ? "rgba(0,0,0,0.4)" : "transparent"}
+        animated={true}
       />
 
       <ImageBackground
