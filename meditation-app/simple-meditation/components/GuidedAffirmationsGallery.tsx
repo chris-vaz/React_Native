@@ -1,14 +1,21 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import { GalleryPreviewData } from '@/constants/models/AffirmationCategory';
 
-interface GuidedAffirmationsGalleryProps{
+interface GuidedAffirmationsGalleryProps {
     title: string;
+    previews: GalleryPreviewData[];
 }
 
-const GuidedAffirmationsGallery = () => {
+const GuidedAffirmationsGallery = ({
+    title,
+    previews,
+}: GuidedAffirmationsGalleryProps) => {
     return (
-        <View>
-            <Text>GuidedAffirmationsGallery</Text>
+        <View className='my-5'>
+            <View className='mb-2'>
+                <Text>{title}</Text>
+            </View>
         </View>
     )
 }
