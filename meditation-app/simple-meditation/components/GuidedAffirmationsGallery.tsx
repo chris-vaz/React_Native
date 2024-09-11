@@ -5,15 +5,12 @@ import { Link } from "expo-router";
 
 interface GuidedAffirmationsGalleryProps {
     title: string;
-    products: GalleryPreviewData[];
+    previews: GalleryPreviewData[];
 }
-
-// Course content to be resumed at 1:01:39 to furthur clean this component
-// Objective - Finish GuidedAffirmationsGallery.tsx ( without any errors )
 
 const GuidedAffirmationsGallery = ({
     title,
-    products,
+    previews,
 }: GuidedAffirmationsGalleryProps) => {
     return (
         <View className="my-5">
@@ -22,17 +19,17 @@ const GuidedAffirmationsGallery = ({
             </View>
             <View className="space-y-2">
                 <FlatList
-                    data={products}
+                    data={previews}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item, index }) => (
+                    renderItem={({ item }) => (
                         <Link href={`/affirmations/${item.id}`} asChild>
                             <Pressable>
-                                <View className="h-36 w-32 rounded-md mr-4">
+                                <View className="h-36 w-36 mr-4">
                                     <Image
                                         source={item.image}
                                         resizeMode="cover"
-                                        className="w-full h-full"
+                                        className="w-full h-full rounded-lg"
                                     />
                                     <Text>ProductGallery</Text>
                                 </View>
