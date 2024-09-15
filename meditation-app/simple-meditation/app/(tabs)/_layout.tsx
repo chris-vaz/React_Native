@@ -22,6 +22,8 @@ const TabsLayout = () => {
                     backgroundColor: colorScheme === 'dark' ? 'black' : 'white', // Change background color based on theme
                     paddingBottom: 8,  // Add some padding at the bottom to move the label up
                     height: 70,         // Optional: Adjust the height of the tab bar
+                    borderWidth: 1,      // Add border width
+                    borderColor: colorScheme === 'dark' ? 'black' : 'white', // Set border color based on theme
                 },
                 tabBarLabelStyle: {
                     fontSize: 14,       // Adjust font size if needed
