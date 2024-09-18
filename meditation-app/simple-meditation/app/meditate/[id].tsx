@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, StatusBar, Pressable, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AntDesign } from "@expo/vector-icons";
 import { Audio } from 'expo-av';
 
@@ -7,45 +7,42 @@ import { MEDITATION_DATA, AUDIO_FILES } from '@/constants/MeditationData';
 import meditationImages from '@/constants/meditation-images';
 import AppGradient from '@/components/AppGradient';
 import { router, useLocalSearchParams } from 'expo-router';
+import { TimerContext } from '@/context/TimerContext';
 
 const Meditate = () => {
   const { id } = useLocalSearchParams();
 
+  const { duration: secondsRemaining, setDuration } = useContext(TimerContext);
+
   // State to track whether the meditation session is active
   const [isMeditating, setMeditating] = useState(false);
-  const [secondsRemaining, setDuration] = useState(600); // Hardcoded duration (10 mins = 600 seconds)
+  // const [secondsRemaining, setDuration] = useState(600); 
   const [isPlayingAudio, setPlayingAudio] = useState(false);
   const [audioSound, setSound] = useState<Audio.Sound>();
 
-  // Timer logic using useEffect to decrement seconds
   useEffect(() => {
-    let timerId: any;
+    let timerId: NodeJS.Timeout;
 
-    if (isMeditating && secondsRemaining > 0) {
-      timerId = setInterval(() => {
-        setDuration(prev => prev - 1);
+    // Exit early when we reach 0
+    if (secondsRemaining === 0) {
+      if (isPlayingAudio) audioSound?.pauseAsync();
+      setMeditating(false);
+      setPlayingAudio(false);
+      return;
+    }
+
+    if (isMeditating) {
+      // Save the interval ID to clear it when the component unmounts
+      timerId = setTimeout(() => {
+        setDuration(secondsRemaining - 1);
       }, 1000);
     }
 
-    if (secondsRemaining === 0) {
-      setMeditating(false); // Stop meditation when timer hits zero
-    }
-
-    return () => clearInterval(timerId); // Clear the interval on component unmount or timer reset
-  }, [isMeditating, secondsRemaining]);
-
-  // Function to format seconds into MM:SS format
-  const formatTime = () => {
-    const minutes = String(Math.floor(secondsRemaining / 60)).padStart(2, '0');
-    const seconds = String(secondsRemaining % 60).padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  };
-
-  // Toggle meditation status (start/stop)
-  const toggleMeditation = async () => {
-    setMeditating(!isMeditating);
-    await togglePlayPause();
-  };
+    // Clear timeout if the component is unmounted or the time left changes
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [secondsRemaining, isMeditating]);
 
   useEffect(() => {
     return () => {
@@ -53,6 +50,16 @@ const Meditate = () => {
       audioSound?.unloadAsync();
     };
   }, [audioSound]);
+
+  const initializeSound = async () => {
+    const audioFileName = MEDITATION_DATA[Number(id) - 1].audio;
+
+    const { sound } = await Audio.Sound.createAsync(
+      AUDIO_FILES[audioFileName]
+    );
+    setSound(sound);
+    return sound;
+  };
 
   const togglePlayPause = async () => {
     const sound = audioSound ? audioSound : await initializeSound();
@@ -68,22 +75,25 @@ const Meditate = () => {
     }
   };
 
-  const initializeSound = async () => {
-    const audioFileName = MEDITATION_DATA[Number(id) - 1].audio;
+  async function toggleMeditationSessionStatus() {
+    if (secondsRemaining === 0) setDuration(10);
 
-    const { sound } = await Audio.Sound.createAsync(
-      AUDIO_FILES[audioFileName]
-    );
-    setSound(sound);
-    return sound;
+    setMeditating(!isMeditating);
+
+    await togglePlayPause();
+  }
+
+  const handleAdjustDuration = () => {
+    if (isMeditating) toggleMeditationSessionStatus();
+
+    router.push("/(modal)/adjust-meditation-duration");
   };
 
-
-  // Hardcoded adjust duration logic for now
-  const adjustDuration = () => {
-    if (isMeditating) setMeditating(false); // Stop the timer if adjusting during the session
-    setDuration(300); // Adjust the duration to 5 minutes (300 seconds)
-  };
+  // Format the timeLeft to ensure two digits are displayed
+  const formattedTimeMinutes = String(
+    Math.floor(secondsRemaining / 60)
+  ).padStart(2, "0");
+  const formattedTimeSeconds = String(secondsRemaining % 60).padStart(2, "0");
 
   return (
     <View className="flex-1">
@@ -93,7 +103,7 @@ const Meditate = () => {
         className="flex-1"
       >
         <AppGradient
-          colors={["rgba(0,0,0,0.4)", "rgba(0,0,0,0.8)"]} // Gradient for background
+          colors={["transparent", "rgba(0,0,0,0.8)"]} // Gradient for background
         >
           <Pressable
             onPress={() => router.back()}
@@ -104,8 +114,8 @@ const Meditate = () => {
 
           <View className="flex-1 justify-center">
             <View className="mx-auto bg-neutral-200 rounded-full w-44 h-44 justify-center items-center">
-              <Text className="ml-5 mt-2 text-4xl text-blue-800 font-rmono">
-                {formatTime()} {/* Display formatted time */}
+              <Text className="mt-2 text-4xl text-blue-800 font-rmono">
+                {formattedTimeMinutes}:{formattedTimeSeconds}
               </Text>
             </View>
           </View>
@@ -113,7 +123,7 @@ const Meditate = () => {
           <View className="mb-5">
             {/* Simple Button for Adjust Duration */}
             <TouchableOpacity
-              onPress={adjustDuration}
+              onPress={handleAdjustDuration}
               style={{
                 backgroundColor: '#3498db',
                 padding: 15,
@@ -126,7 +136,7 @@ const Meditate = () => {
 
             {/* Simple Button for Start/Stop Meditation */}
             <TouchableOpacity
-              onPress={toggleMeditation}
+              onPress={toggleMeditationSessionStatus}
               style={{
                 backgroundColor: isMeditating ? '#e74c3c' : '#2ecc71', // Red if stop, green if start
                 padding: 15,

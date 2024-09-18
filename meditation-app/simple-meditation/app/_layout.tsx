@@ -1,3 +1,4 @@
+import TimerProvider from "@/context/TimerContext";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -25,7 +26,7 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
+    <TimerProvider>
       <Stack>
         <Stack.Screen
           name="(tabs)"
@@ -44,6 +45,6 @@ export default function RootLayout() {
           options={{ headerShown: false, presentation: "modal" }}
         />
       </Stack>
-    </SafeAreaProvider>
+    </TimerProvider>
   );
 }
