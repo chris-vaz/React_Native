@@ -1,8 +1,9 @@
 import { View, Text, ImageBackground, StatusBar, Pressable, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { AntDesign } from "@expo/vector-icons";
+import { Audio } from 'expo-av';
 
-
+import { MEDITATION_DATA, AUDIO_FILES } from '@/constants/MeditationData';
 import meditationImages from '@/constants/meditation-images';
 import AppGradient from '@/components/AppGradient';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -13,6 +14,8 @@ const Meditate = () => {
   // State to track whether the meditation session is active
   const [isMeditating, setMeditating] = useState(false);
   const [secondsRemaining, setDuration] = useState(600); // Hardcoded duration (10 mins = 600 seconds)
+  const [isPlayingAudio, setPlayingAudio] = useState(false);
+  const [audioSound, setSound] = useState<Audio.Sound>();
 
   // Timer logic using useEffect to decrement seconds
   useEffect(() => {
@@ -39,9 +42,42 @@ const Meditate = () => {
   };
 
   // Toggle meditation status (start/stop)
-  const toggleMeditation = () => {
+  const toggleMeditation = async () => {
     setMeditating(!isMeditating);
+    await togglePlayPause();
   };
+
+  useEffect(() => {
+    return () => {
+      setDuration(10);
+      audioSound?.unloadAsync();
+    };
+  }, [audioSound]);
+
+  const togglePlayPause = async () => {
+    const sound = audioSound ? audioSound : await initializeSound();
+
+    const status = await sound?.getStatusAsync();
+
+    if (status?.isLoaded && !isPlayingAudio) {
+      await sound?.playAsync();
+      setPlayingAudio(true);
+    } else {
+      await sound?.pauseAsync();
+      setPlayingAudio(false);
+    }
+  };
+
+  const initializeSound = async () => {
+    const audioFileName = MEDITATION_DATA[Number(id) - 1].audio;
+
+    const { sound } = await Audio.Sound.createAsync(
+      AUDIO_FILES[audioFileName]
+    );
+    setSound(sound);
+    return sound;
+  };
+
 
   // Hardcoded adjust duration logic for now
   const adjustDuration = () => {
