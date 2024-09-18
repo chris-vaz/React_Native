@@ -32,7 +32,7 @@ const NatureMeditate = () => {
                         renderItem={({ item }) => (
                             <Pressable
                                 onPress={() =>
-                                    console.log("pressed")
+                                    router.push(`/meditate/${item.id}`)
                                 }
                                 className="h-48 my-3 mb-5 rounded-xl overflow-hidden"
                             >
