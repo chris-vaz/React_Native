@@ -2,6 +2,8 @@
 
 A cross-platform meditation app built with **React Native** and **Expo**, designed to offer a clean and seamless user experience. The app includes features such as meditation audio playback, a flat list of meditations, tab navigation, and more. Dive into a tranquil coding experience with a focus on reusability and performance.
 
+![Cover App Image](/meditation-app/Promo-assets/CoverImage2.png)
+
 ## 📖 Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
