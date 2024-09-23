@@ -92,9 +92,8 @@ npx expo start
 .
 ├── assets/           # Images, fonts, and other assets
 ├── components/       # Reusable UI components
-├── screens/          # App screens (Onboarding, Meditation, etc.)
+├── app/              # App screens (Onboarding, Meditation, etc.)
 ├── navigation/       # Tab navigation and routing
-├── App.js            # Main entry point
 ├── package.json      # Project metadata and dependencies
 └── README.md         # Project documentation
 ``` 
